@@ -33,7 +33,7 @@ root@rpc:~/session_03# docker inspect dcfe4e7a7aff|grep -i mem
             "MemoryReservation": 2147483648,
             "MemorySwap": 10737418240,
             "MemorySwappiness": null,
-
+# One billion nano CPUs corresponds to one CPU
 ```
 
 # Limit Number of CPU Cores
