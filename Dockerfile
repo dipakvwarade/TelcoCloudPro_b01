@@ -12,7 +12,7 @@ CMD ping -c 1000 google.com
 # docker build -t dipakvwarade/pinggoogle:v01 .
 # docker push dipakvwarade/pinggoogle:v01
 
-root@rpc:~/session_03# docker push dipakvwarade/pinggoogle:v01
+# root@rpc:~/session_03# docker push dipakvwarade/pinggoogle:v01
 # The push refers to repository [docker.io/dipakvwarade/pinggoogle]
 # 765bfac2ddd1: Pushed 
 # 5d0bd67ec299: Pushed 
