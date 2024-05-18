@@ -105,6 +105,22 @@ PING nginx1 (172.22.0.4) 56(84) bytes of data.
 
 root in ~ 
 ➜ docker exec netshoot1 ping nginx1
+
+➜ ip link show 
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: ens4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 1000
+    link/ether 42:01:0a:b6:00:05 brd ff:ff:ff:ff:ff:ff
+4: docker0: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default 
+    link/ether 02:42:44:c1:06:8e brd ff:ff:ff:ff:ff:ff
+50: br-8e62b0463202: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default 
+    link/ether 02:42:ae:48:4f:d9 brd ff:ff:ff:ff:ff:ff
+60: vethab1b89c@if59: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-8e62b0463202 state UP mode DEFAULT group default 
+    link/ether d6:c1:62:10:c4:83 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+62: veth5e24843@if61: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-8e62b0463202 state UP mode DEFAULT group default 
+    link/ether 3a:89:d2:f9:b0:f8 brd ff:ff:ff:ff:ff:ff link-netnsid 1
+64: vethf73e0d7@if63: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue master br-8e62b0463202 state UP mode DEFAULT group default 
+    link/ether 8a:5f:0e:80:e5:35 brd ff:ff:ff:ff:ff:ff link-netnsid 2
 ```
 
 # None
