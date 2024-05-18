@@ -8,6 +8,33 @@
 - 172.17.0.x
 - only ip connectivity between containers
 ```
+root in TelcoCloudPro_b01/prometheus-grafana on  main on 🐳 v26.1.3 
+➜ ip -br a     
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens4             UP             10.182.0.5/32 metric 1024 fe80::4001:aff:feb6:5/64 
+docker0          DOWN           172.17.0.1/16 fe80::42:44ff:fec1:68e/64 
+
+root in TelcoCloudPro_b01/prometheus-grafana on  main on 🐳 v26.1.3 
+➜ docker ps          
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+                                                                                                                                                             
+
+root in TelcoCloudPro_b01/prometheus-grafana …
+➜ 
+
+root in TelcoCloudPro_b01/prometheus-grafana on  main on 🐳 v26.1.3 
+➜ docker run -dit nginx                                 
+f867315ee41018ff5a8b8764c6034f5157beeb937aff5c908d1d5ef11b8e78e1
+
+root in TelcoCloudPro_b01/prometheus-grafana on  main on 🐳 v26.1.3 
+➜ ip -br a     
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+ens4             UP             10.182.0.5/32 metric 1024 fe80::4001:aff:feb6:5/64 
+docker0          UP             172.17.0.1/16 fe80::42:44ff:fec1:68e/64 
+veth7360cb5@if68 UP             fe80::cc8d:6cff:fe57:fcfb/64 
+
+root in TelcoCloudPro_b01/prometheus-grafana on  main on 🐳 v26.1.3
+
 ➜ ip link show                 
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
