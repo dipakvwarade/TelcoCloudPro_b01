@@ -1,5 +1,9 @@
 # Docker volume practice
 
+A Docker Volume is a mechanism for persisting data generated and used by Docker containers. Volumes can be more efficient and flexible than storing data inside a container's writable layer because they allow data to persist across container restarts, updates, and even when containers are deleted. 
+
+
+
 ## Create a dir /root/tcp_vol
 ## Change the working dir to /root/tcp_vol/
 ```
