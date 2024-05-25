@@ -10,3 +10,12 @@
 | Remove Image | Remove an image. | `docker rmi myimage` | `crictl rmi myimage` |
 | Log Output | View the logs of a container. | `docker logs` | `crictl logs <container_id>` |
 | Port Forwarding | Forward a port from a container to the host machine. | `docker -p <port> mycontainer` | `crictl -p <port> mycontainer` |
+| Attach | Attach to a running container. | `docker attach mycontainer` | `crictl attach mycontainer` |
+| Exec | Run a command in a running container. | `docker exec -it mycontainer bash` | `crictl exec -t mycontainer bash` |
+| Images | List images. | `docker images` | `crictl images` |
+| Info | Display system-wide information. | `docker info` | `crictl info` |
+| Inspect | Return low-level information on a container, image or task. | `docker inspect mycontainer` | `crictl inspectmycontainer` |
+| Logs | Fetch the logs of a container. | `docker logs -f mycontainer` | `crictl logs -f mycontainer` |
+| PS | List containers. | `docker ps` | `crictl ps` |
+| Stats | Display a live stream of container(s) resource usage statistics. | `docker stats mycontainer` | `crictl statsmycontainer` |
+| Version | Show the runtime (Docker, ContainerD, or others) version information. | `docker version` | `crictl version` |
