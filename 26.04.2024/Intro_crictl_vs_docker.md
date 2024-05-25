@@ -1,6 +1,6 @@
 | **Command** | **Description** | **Docker** | **Crictl** |
 | --- | --- | --- | --- |
-| Run Container | Run a new container from an image. | `docker run -it myimage` | `crictl create --image=myimage` |
+| Run Container | Run a new container from an image. | `docker run -it myimage` | `crictl run --image=myimage` |
 | List Containers | List all running containers. | `docker ps` | `crictl ps` |
 | Inspect Container | Inspect a container's configuration. | `docker inspect` | `crictl inspect` |
 | Kill/Stop Container | Stop or kill a running container. | `docker stop` / `docker kill <container_id>` | `crictl stop` / `crictl kill <container_id>` |
