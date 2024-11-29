@@ -1,4 +1,7 @@
-CPU pinning in Kubernetes refers to the practice of binding or "pinning" a specific container's CPU workload to a particular CPU core(s) on the host machine. This is done to ensure that the container has predictable performance characteristics, as it minimizes the context switching and cache thrashing that can occur when processes are moved across different CPUs by the scheduler. This is particularly useful for high-performance or latency-sensitive applications, such as network functions, databases, and other compute-intensive workloads.
+CPU pinning in Kubernetes refers to the practice of binding or "pinning" a specific container's CPU workload to a particular CPU core(s) on the host machine. 
+This is done to ensure that the container has predictable performance characteristics, as it minimizes the context switching and cache thrashing that can occur when processes are moved across different CPUs by the scheduler. 
+
+This is particularly useful for high-performance or latency-sensitive applications, such as network functions, databases, and other compute-intensive workloads.
 
 ### How CPU Pinning Works
 
@@ -38,7 +41,8 @@ metadata:
 spec:
   containers:
   - name: compute-intensive-container
-    image: myapp:latest
+    image: gcr.io/google-containers/stress:v1
+    args: ["-cpus", "2"]
     resources:
       requests:
         cpu: "2"  # This requests two full cores
