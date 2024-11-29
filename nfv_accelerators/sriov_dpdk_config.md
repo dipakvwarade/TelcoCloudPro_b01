@@ -37,6 +37,9 @@
    - Use `lspci` to list all NICs and identify the one to bind:
      ```bash
      lspci | grep Ethernet
+     # ➜ lspci | grep Ethernet
+     # 00:1f.6 Ethernet controller: Intel Corporation Ethernet Connection (2) I219-V
+
      ```
 
 2. **Enable Virtual Functions**:
