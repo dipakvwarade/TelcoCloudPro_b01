@@ -1,71 +1,116 @@
-CPU pinning in Kubernetes refers to the practice of binding or "pinning" a specific container's CPU workload to a particular CPU core(s) on the host machine. 
-This is done to ensure that the container has predictable performance characteristics, as it minimizes the context switching and cache thrashing that can occur when processes are moved across different CPUs by the scheduler. 
+The Kubernetes Topology Manager is a component that helps to optimize the placement of pods on nodes by considering the NUMA (Non-Uniform Memory Access) topology of the nodes. This is especially important for workloads that are sensitive to NUMA configurations, such as those requiring high-performance computing resources, where memory and CPU affinity can have significant performance impacts.
 
-This is particularly useful for high-performance or latency-sensitive applications, such as network functions, databases, and other compute-intensive workloads.
+In NUMA architectures, a processor can access its local memory faster than non-local memory. Hence, for performance-sensitive applications, it's crucial to place CPU, memory, and device resources (like GPUs or NICs) in a way that minimizes access time.
 
-### How CPU Pinning Works
+### Topology Manager
 
-1. **Exclusive Core**: By pinning a container to specific CPU cores, you provide exclusive access to the cores, which helps achieve consistent performance by avoiding unnecessary context switches.
+The Topology Manager coordinates CPU, memory, and device assignments for pods running on a node. It ensures that these resources are aligned with the underlying hardware topology, specifically considering factors like CPU and memory locality. The primary objective is to improve the cache efficiency and reduce latency for critical workloads.
 
-2. **Low-Latency and Real-Time Needs**: For workloads requiring low latency or real-time processing, CPU cores can be dedicated to containers running these workloads.
+### Topology Manager Policies
 
-3. **Resource Allocation**: Kubernetes provides a way to specify CPU requests and limits for containers, which can be leveraged to pin CPUs when using the `static` CPU manager policy, an enhanced method compared to the default `none`.
+The Topology Manager uses different policies to make placement decisions:
 
-### Enabling CPU Pinning in Kubernetes
+1. **None**: This policy provides no specific guidance on resource placement. It is equivalent to disabling the Topology Manager, thus allowing resources to be assigned without regard to NUMA alignment.
 
-To enable CPU pinning in Kubernetes, you need to adjust the CPU manager policy of the kubelet from the default `none` to `static`, which allows the kubelet to exclusively allocate full CPU cores to containers.
+2. **Best-effort**: This policy makes a best effort to align resources with NUMA nodes. If alignment is not possible, it will still allow the workload to run without alignment.
 
-1. **Configure Kubelet**:
-   - Edit `/var/lib/kubelet/config.yaml` and set the CPU manager policy:
+3. **Restricted**: This policy allows workloads to run only if resources can be aligned with NUMA nodes. If a NUMA-aligned placement is not possible, the pod will stay in the pending state until placement becomes possible.
+
+4. **Single-numa-node**: This policy requires that all required resources for a pod be placed on a single NUMA node. The pod is admitted only if such placement is feasible.
+
+### Example
+
+Consider a scenario with a Kubernetes cluster that includes nodes with multiple NUMA nodes. Let’s say you have a node with 2 NUMA nodes, each with a subset of CPUs and its own local memory.
+
+Imagine you want to schedule a performance-sensitive application, requiring 4 CPU cores and specific memory resources that would benefit from NUMA alignment for better performance.
+
+1. **Configure Topology Manager**:
+   - Set the Topology Manager's policy to `restricted` or `single-numa-node` to ensure that resource allocation respects NUMA boundaries.
+   - This can be set in the kubelet configuration file on each node:
      ```yaml
-     cpuManagerPolicy: static
+     topologyManagerPolicy: "restricted"
      ```
 
-2. **Restart Kubelet**:
-   - Restart the kubelet service to apply the changes:
-     ```bash
-     sudo systemctl restart kubelet
+2. **Submit a Pod**:
+   - Create a pod specification that requests multiple CPUs and optionally defines extended resources like GPUs.
+   - Example YAML for the pod:
+
+     ```yaml
+     apiVersion: v1
+     kind: Pod
+     metadata:
+       name: numademo
+     spec:
+       containers:
+       - name: workload
+         image: gcr.io/google-containers/stress:v1
+         args: ["-cpus", "2"]
+         resources:
+           requests:
+             cpu: "4"
+             memory: "8Gi"
+           limits:
+             cpu: "4"
+             memory: "8Gi"
      ```
 
-### Example of CPU Pinning in Kubernetes
+3. **Placement**:
+   - When this pod is scheduled to a node, the Topology Manager coordinates with other manager components (like the CPU Manager, Device Manager, and Memory Manager) to attempt to allocate all requested resources from a single NUMA node.
+   - If the policy is `single-numa-node`, and the resources cannot be allocated from a single NUMA node, the pod will not be scheduled until such a configuration becomes available.
 
-Assume you have a Pod running a compute-intensive application that benefits from CPU pinning. Here's how you can create a Pod specification in Kubernetes that requests exclusive CPUs:
+### 1. Check CPU NUMA Nodes
 
-#### Pod Specification Example
+You can use the `lscpu` command to get information about CPU architecture and NUMA nodes:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: cpu-pinned-pod
-spec:
-  containers:
-  - name: compute-intensive-container
-    image: gcr.io/google-containers/stress:v1
-    args: ["-cpus", "2"]
-    resources:
-      requests:
-        cpu: "2"  # This requests two full cores
-      limits:
-        cpu: "2"  # The container will be pinned to two physical CPU cores
+```bash
+lscpu
 ```
 
-#### Explanation
+This will output information about your CPU, including the NUMA nodes. Look for lines that start with things like "NUMA node(s)" or "NUMA node0 CPU(s)".
 
-- **Requests and Limits**: Requesting and setting limits to whole numbers results in the kubelet attempting to allocate whole cores to the container. With the `cpuManagerPolicy: static`, this means attempting to pin the container to dedicated cores.
+### 2. Check Memory NUMA Nodes
 
-- **CPU Manager**: With the `static` policy, when a container requests and is allocated a whole integer value of CPU, the kubelet will pin the container to specific CPUs, avoiding CPU sharing with other processes.
+The `numactl` command provides detailed information about memory configuration associated with NUMA nodes. You need to have the `numactl` package installed on your system:
 
-- **Node Considerations**: Ensure that your Kubernetes node(s) have enough available CPU resources to satisfy the whole number CPU requests without affecting other workloads.
+```bash
+numactl --hardware
+```
 
-### Benefits and Considerations
+This command will show you a summary detailing memory and CPU association with each NUMA node.
 
-- **Predictable Performance**: CPU pinning helps in maintaining consistent performance by reducing the variability introduced by the kernel's CPU scheduler.
+### 3. Check NIC NUMA Nodes
 
-- **Improved Cache Usage**: Since the workload consistently runs on the same cores, it improves cache efficiency and reduces the overhead of cache warmup.
+For checking the NUMA node association of network interfaces, you can examine the `/sys/class/net/` directory for each network interface:
 
-- **Optimal for Real-Time Applications**: Ideal for applications that have stringent timing requirements as it reduces latency unpredictability.
+Use the following command to find the NUMA node associated with a particular network interface, say `eth0`:
 
-- **Node Suitability**: Ensure nodes are suitable and have sufficient CPUs to dedicate to critical workloads without disrupting resource allocation for other applications.
+```bash
+cat /sys/class/net/eth0/device/numa_node
+```
 
-CPU pinning is a powerful technique in Kubernetes when you need to run workloads that have specific performance needs, enabling better predictability and ensuring that critical applications get uninterrupted access to CPU resources.
+A result of `-1` generally indicates that the hardware does not have a specific NUMA node association (often seen in virtual environments).
+
+### Checking NUMA Node for All Network Interfaces
+
+You can loop through all network interfaces and display their NUMA node information:
+
+```bash
+for iface in /sys/class/net/*; do
+    iface_name=$(basename $iface)
+    numa_node=$(cat $iface/device/numa_node)
+    echo "Interface: $iface_name, NUMA Node: $numa_node"
+done
+```
+
+### Additional Tools
+
+- **hwloc**: This tool provides a command-line tool `lstopo` that can graphically display the hardware topology, including NUMA nodes.
+
+  ```bash
+  sudo apt-get install hwloc    # Debian/Ubuntu
+  sudo yum install hwloc        # CentOS/RHEL
+
+  lstopo
+  ```
+
+- **lshw**: Another utility that can provide detailed information about hardware configurations, though not as focused on NUMA as `numactl`.
