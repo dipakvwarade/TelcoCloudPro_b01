@@ -9,7 +9,7 @@
 2. **Containerization:**
    - Kubernetes and Docker
 
-** ------- Dont go down without completing above ---------- **
+**------- Dont go down without completing above ----------**
 
 3. **CI/CD Tools:**
    - Jenkins
