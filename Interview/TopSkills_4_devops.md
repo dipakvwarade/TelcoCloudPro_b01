@@ -1,6 +1,6 @@
 ### DevOps Skills :
 
-- 80% focus on first two
+- 80% focus on *first two*
 - 20% on rest of the skills
 
 1. **Cloud Platforms:**
@@ -8,8 +8,6 @@
 
 2. **Containerization:**
    - Kubernetes and Docker
-
-**------- Dont go down without completing above ----------**
 
 3. **CI/CD Tools:**
    - Jenkins
